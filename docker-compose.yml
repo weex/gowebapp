@@ -1,0 +1,13 @@
+version: "3"
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    links:
+      - db
+    command: ["./wait-for-postgres.sh", "db", "go-wrapper", "run"]
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: gowebapp
