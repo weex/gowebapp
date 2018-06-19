@@ -11,3 +11,5 @@ services:
     image: postgres
     environment:
       POSTGRES_DB: gowebapp
+    ports:
+      - "5432:5432"

@@ -5,7 +5,17 @@ Simplistic Go Web App
 Read about it [here](https://grisha.org/blog/2017/04/27/simplistic-go-web-app/).
 
 
+## With Docker:
 
+First time or to rebuild everything and delete container data: `docker-first-run.sh`
+
+Hit Ctrl-c to stop the container.
+
+Subsequent times, assuming you want to persist data: `docker-run.sh`
+
+Connect to database from another terminal with: `psql -hlocalhost -Upostgres`
+
+## Non-dockerized instructions
 
 To install:
 
