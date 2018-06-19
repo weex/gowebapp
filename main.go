@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/grisha/gowebapp/daemon"
+	"./daemon"
 )
 
 var assetsPath string
