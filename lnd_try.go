@@ -21,28 +21,59 @@ package main
 import (
 	"log"
 //	"os"
+    "os/user"
 	"time"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
-	pb "github.com/weex/gowebapp/gateways/lnd"
+    macaroon "gopkg.in/macaroon.v2"
+    pb "github.com/weex/gowebapp/gateways/lnd"
 )
 
 const (
 	address     = "localhost:10009"
-	certFile    = "/home/dsterry/.lnd/tls.cert"
+	certFile    = "tls.cert"
+    macFile     = "admin.macaroon"
 	defaultName = "world"
 )
 
 func main() {
-	// Set up a connection to the server.
-	creds, err := credentials.NewClientTLSFromFile(certFile, "")
+    // get user's home
+    var homeDir string
+
+	user, err := user.Current()
+	if err == nil {
+		homeDir = user.HomeDir
+	} else {
+		homeDir = os.Getenv("HOME")
+	}
+
+    // get macaroon
+    macBytes, err := ioutil.ReadFile(homeDir + macFile)
+    if err != nil {
+		fatal(err)
+	}
+	mac := &macaroon.Macaroon{}
+	if err = mac.UnmarshalBinary(macBytes); err != nil {
+		fatal(err)
+	}
+
+
+    // Set up a connection to the server.
+	creds, err := credentials.NewClientTLSFromFile(homeDir + certFile, "")
 	if err != nil {
 		log.Fatalf("could not get creds: %v", err)
 	}
 
-	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(creds))
+    credMac := macaroons.NewMacaroonCredential(mac)
+
+    opts := []grpc.DialOption{
+		grpc.WithTransportCredentials(creds),
+        grpc.WithPerRPCCredentials(credMac)
+	}
+
+	conn, err := grpc.Dial(address, opts...)
 	//conn, err := grpc.Dial(address, grpc.WithSecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
