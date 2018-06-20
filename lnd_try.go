@@ -20,27 +20,29 @@ package main
 
 import (
 	"log"
-//	"os"
-    "os/user"
+	"os"
+	"os/user"
+	"io/ioutil"
 	"time"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
-    macaroon "gopkg.in/macaroon.v2"
-    pb "github.com/weex/gowebapp/gateways/lnd"
+	macaroon "gopkg.in/macaroon.v2"
+	"github.com/lightningnetwork/lnd/macaroons"
+	pb "github.com/weex/gowebapp/gateways/lnd"
 )
 
 const (
 	address     = "localhost:10009"
 	certFile    = "tls.cert"
-    macFile     = "admin.macaroon"
+	macFile     = "admin.macaroon"
 	defaultName = "world"
 )
 
 func main() {
-    // get user's home
-    var homeDir string
+	// get user's home
+	var homeDir string
 
 	user, err := user.Current()
 	if err == nil {
@@ -49,28 +51,28 @@ func main() {
 		homeDir = os.Getenv("HOME")
 	}
 
-    // get macaroon
-    macBytes, err := ioutil.ReadFile(homeDir + macFile)
-    if err != nil {
-		fatal(err)
+	// get macaroon
+	macBytes, err := ioutil.ReadFile(homeDir + macFile)
+	if err != nil {
+		log.Fatalf("could not find macaroon: %v", err)
 	}
 	mac := &macaroon.Macaroon{}
 	if err = mac.UnmarshalBinary(macBytes); err != nil {
-		fatal(err)
+		log.Fatalf("could not unmarshall macaroon: %v", err)
 	}
 
 
-    // Set up a connection to the server.
+	// Set up a connection to the server.
 	creds, err := credentials.NewClientTLSFromFile(homeDir + certFile, "")
 	if err != nil {
 		log.Fatalf("could not get creds: %v", err)
 	}
 
-    credMac := macaroons.NewMacaroonCredential(mac)
+	credMac := macaroons.NewMacaroonCredential(mac)
 
-    opts := []grpc.DialOption{
+	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(creds),
-        grpc.WithPerRPCCredentials(credMac)
+		grpc.WithPerRPCCredentials(credMac),
 	}
 
 	conn, err := grpc.Dial(address, opts...)
