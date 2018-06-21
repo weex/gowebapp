@@ -29,14 +29,14 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	macaroon "gopkg.in/macaroon.v2"
-	"github.com/lightningnetwork/lnd/macaroons"
+	"github.com/weex/gowebapp/macaroons"
 	pb "github.com/weex/gowebapp/gateways/lnd"
 )
 
 const (
 	address     = "localhost:10009"
-	certFile    = "tls.cert"
-	macFile     = "admin.macaroon"
+	certFile    = ".lnd/tls.cert"
+	macFile     = ".lnd/admin.macaroon"
 	defaultName = "world"
 )
 
@@ -52,7 +52,7 @@ func main() {
 	}
 
 	// get macaroon
-	macBytes, err := ioutil.ReadFile(homeDir + macFile)
+	macBytes, err := ioutil.ReadFile(homeDir + "/" + macFile)
 	if err != nil {
 		log.Fatalf("could not find macaroon: %v", err)
 	}
@@ -62,8 +62,8 @@ func main() {
 	}
 
 
-	// Set up a connection to the server.
-	creds, err := credentials.NewClientTLSFromFile(homeDir + certFile, "")
+	// Set up a connection to lnd.
+	creds, err := credentials.NewClientTLSFromFile(homeDir + "/" + certFile, "")
 	if err != nil {
 		log.Fatalf("could not get creds: %v", err)
 	}
@@ -76,26 +76,21 @@ func main() {
 	}
 
 	conn, err := grpc.Dial(address, opts...)
-	//conn, err := grpc.Dial(address, grpc.WithSecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
 	c := pb.NewLightningClient(conn)
 
-	// Contact the server and print out its response.
-	//name := defaultName
-	//if len(os.Args) > 1 {
-	//	name = os.Args[1]
-	//}
+
+	// Contact lnd print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-//	r, err := c.SayHello(ctx, &pb.HelloRequest{Name: name})
 	r, err := c.ListPeers(ctx, &pb.ListPeersRequest{})
 	if err != nil {
 		log.Fatalf("could not get peers: %v", err)
 	}
 	for _, peer := range r.Peers {
-		log.Printf("Peer. %s", peer.Address)
+		log.Printf("Peer. %s", peer)
 	}
 }
