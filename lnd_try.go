@@ -20,49 +20,77 @@ package main
 
 import (
 	"log"
-//	"os"
+	"os"
+	"os/user"
+	"io/ioutil"
 	"time"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	macaroon "gopkg.in/macaroon.v2"
+	"github.com/weex/gowebapp/macaroons"
 	pb "github.com/weex/gowebapp/gateways/lnd"
 )
 
 const (
 	address     = "localhost:10009"
-	certFile    = "/home/dsterry/.lnd/tls.cert"
+	certFile    = ".lnd/tls.cert"
+	macFile     = ".lnd/admin.macaroon"
 	defaultName = "world"
 )
 
 func main() {
-	// Set up a connection to the server.
-	creds, err := credentials.NewClientTLSFromFile(certFile, "")
+	// get user's home
+	var homeDir string
+
+	user, err := user.Current()
+	if err == nil {
+		homeDir = user.HomeDir
+	} else {
+		homeDir = os.Getenv("HOME")
+	}
+
+	// get macaroon
+	macBytes, err := ioutil.ReadFile(homeDir + "/" + macFile)
+	if err != nil {
+		log.Fatalf("could not find macaroon: %v", err)
+	}
+	mac := &macaroon.Macaroon{}
+	if err = mac.UnmarshalBinary(macBytes); err != nil {
+		log.Fatalf("could not unmarshall macaroon: %v", err)
+	}
+
+
+	// Set up a connection to lnd.
+	creds, err := credentials.NewClientTLSFromFile(homeDir + "/" + certFile, "")
 	if err != nil {
 		log.Fatalf("could not get creds: %v", err)
 	}
 
-	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(creds))
-	//conn, err := grpc.Dial(address, grpc.WithSecure())
+	credMac := macaroons.NewMacaroonCredential(mac)
+
+	opts := []grpc.DialOption{
+		grpc.WithTransportCredentials(creds),
+		grpc.WithPerRPCCredentials(credMac),
+	}
+
+	conn, err := grpc.Dial(address, opts...)
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
 	c := pb.NewLightningClient(conn)
 
-	// Contact the server and print out its response.
-	//name := defaultName
-	//if len(os.Args) > 1 {
-	//	name = os.Args[1]
-	//}
+
+	// Contact lnd print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-//	r, err := c.SayHello(ctx, &pb.HelloRequest{Name: name})
 	r, err := c.ListPeers(ctx, &pb.ListPeersRequest{})
 	if err != nil {
 		log.Fatalf("could not get peers: %v", err)
 	}
 	for _, peer := range r.Peers {
-		log.Printf("Peer. %s", peer.Address)
+		log.Printf("Peer. %s", peer)
 	}
 }
