@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"../db"
+    "../lnd"
 	"../model"
 	"../ui"
 )
@@ -17,18 +18,28 @@ type Config struct {
 
 	Db db.Config
 	UI ui.Config
+    Lnd lnd.Config
 }
 
 func Run(cfg *Config) error {
 	log.Printf("Starting, HTTP on: %s\n", cfg.ListenSpec)
 
-	db, err := db.InitDb(cfg.Db)
+    // Database
+    db, err := db.InitDb(cfg.Db)
 	if err != nil {
 		log.Printf("Error initializing database: %v\n", err)
 		return err
 	}
 
 	m := model.New(db)
+
+    // Lightning network
+    lnd, err := lnd.InitLnd(cfg.Lnd)
+	if err != nil {
+		log.Printf("Error initializing Lightning: %v\n", err)
+		return err
+	}
+    log.Printf("got lnd %v", lnd)
 
 	l, err := net.Listen("tcp", cfg.ListenSpec)
 	if err != nil {
