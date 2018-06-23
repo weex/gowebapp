@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"time"
+	"strconv"
+    "time"
 
 	"../model"
 	"../lnd"
@@ -81,8 +82,19 @@ func peopleHandler(m *model.Model) http.Handler {
 
 func invoiceHandler(lnd *lnd.LndLn) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		//invoice, err := lnd.ListPeers()
-		invoice, err := lnd.MakeInvoice(999)
+        if r.Method != "GET" {
+            w.WriteHeader(http.StatusBadRequest)
+            fmt.Fprintln(w, "No GET", r.Method)
+            return
+        }
+
+        amt, _ := strconv.Atoi(r.FormValue("amt"))
+        int_amt := int64(amt)
+        if int_amt == 0 {
+            int_amt = 100
+        }
+
+        invoice, err := lnd.MakeInvoice(int_amt)
 		if err != nil {
 			http.Error(w, "Error generating invoice.", http.StatusBadRequest)
 			return

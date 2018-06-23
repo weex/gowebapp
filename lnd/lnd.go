@@ -89,7 +89,7 @@ func (l *LndLn) ListPeers() (*pb.ListPeersResponse, error) {
     return r, nil
 }
 
-func (l *LndLn) MakeInvoice(sats int) (*pb.AddInvoiceResponse, error) {
+func (l *LndLn) MakeInvoice(amt int64) (*pb.AddInvoiceResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
@@ -97,10 +97,10 @@ func (l *LndLn) MakeInvoice(sats int) (*pb.AddInvoiceResponse, error) {
         Memo:            "this is a test",
         //Receipt:         "",
         //RPreimage:       "",
-        Value:           100,
+        Value:           amt,
         //DescriptionHash: "",
         //FallbackAddr:    "",
-        Expiry:          86400,
+        Expiry:          600,
         Private:         true,
     }
 
