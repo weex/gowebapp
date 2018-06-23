@@ -8,13 +8,14 @@ import (
 	"time"
 
 	"../model"
+	"../lnd"
 )
 
 type Config struct {
 	Assets http.FileSystem
 }
 
-func Start(cfg Config, m *model.Model, listener net.Listener) {
+func Start(cfg Config, m *model.Model, l *lnd.LndLn, listener net.Listener) {
 
 	server := &http.Server{
 		ReadTimeout:    60 * time.Second,
@@ -23,6 +24,7 @@ func Start(cfg Config, m *model.Model, listener net.Listener) {
 
 	http.Handle("/", indexHandler(m))
 	http.Handle("/people", peopleHandler(m))
+	http.Handle("/invoice", invoiceHandler(l))
 	http.Handle("/js/", http.FileServer(cfg.Assets))
 
 	go server.Serve(listener)
@@ -63,13 +65,32 @@ func peopleHandler(m *model.Model) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		people, err := m.People()
 		if err != nil {
-			http.Error(w, "This is an error", http.StatusBadRequest)
+			http.Error(w, "Could not get people.", http.StatusBadRequest)
 			return
 		}
 
 		js, err := json.Marshal(people)
 		if err != nil {
-			http.Error(w, "This is an error", http.StatusBadRequest)
+			http.Error(w, "Can't convert people into json.", http.StatusBadRequest)
+			return
+		}
+
+		fmt.Fprintf(w, string(js))
+	})
+}
+
+func invoiceHandler(lnd *lnd.LndLn) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		//invoice, err := lnd.ListPeers()
+		invoice, err := lnd.MakeInvoice(999)
+		if err != nil {
+			http.Error(w, "Error generating invoice.", http.StatusBadRequest)
+			return
+		}
+
+		js, err := json.Marshal(invoice)
+		if err != nil {
+			http.Error(w, "Error coverting invoice to json.", http.StatusBadRequest)
 			return
 		}
 

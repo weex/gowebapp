@@ -41,13 +41,13 @@ func Run(cfg *Config) error {
 	}
     log.Printf("got lnd %v", lnd)
 
-	l, err := net.Listen("tcp", cfg.ListenSpec)
+	listener, err := net.Listen("tcp", cfg.ListenSpec)
 	if err != nil {
 		log.Printf("Error creating listener: %v\n", err)
 		return err
 	}
 
-	ui.Start(cfg.UI, m, l)
+	ui.Start(cfg.UI, m, lnd, listener)
 
 	waitForSignal()
 
