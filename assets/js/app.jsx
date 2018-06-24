@@ -1,6 +1,4 @@
-
 // -*- JavaScript -*-
-
 
 class PersonItem extends React.Component {
   render() {

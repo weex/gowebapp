@@ -88,13 +88,22 @@ func invoiceHandler(lnd *lnd.LndLn) http.Handler {
             return
         }
 
-        amt, _ := strconv.Atoi(r.FormValue("amt"))
+        amt, err := strconv.Atoi(r.FormValue("amt"))
+		if err != nil {
+			http.Error(w, "Error converting amount to int.", http.StatusBadRequest)
+			return
+		}
         int_amt := int64(amt)
         if int_amt == 0 {
             int_amt = 100
         }
 
-        invoice, err := lnd.MakeInvoice(int_amt)
+        desc := r.FormValue("desc")
+        if desc == "" {
+            desc = "gowebapp payment"
+        }
+
+        invoice, err := lnd.MakeInvoice(int_amt, desc)
 		if err != nil {
 			http.Error(w, "Error generating invoice.", http.StatusBadRequest)
 			return

@@ -89,12 +89,12 @@ func (l *LndLn) ListPeers() (*pb.ListPeersResponse, error) {
     return r, nil
 }
 
-func (l *LndLn) MakeInvoice(amt int64) (*pb.AddInvoiceResponse, error) {
+func (l *LndLn) MakeInvoice(amt int64, desc string) (*pb.AddInvoiceResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
     invoice := &pb.Invoice{
-        Memo:            "this is a test",
+        Memo:            desc,
         //Receipt:         "",
         //RPreimage:       "",
         Value:           amt,
