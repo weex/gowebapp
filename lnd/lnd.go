@@ -110,3 +110,15 @@ func (l *LndLn) MakeInvoice(amt int64, desc string) (*pb.AddInvoiceResponse, err
     }
     return r, nil
 }
+
+func (l *LndLn) ViewInvoice(r_hash string) (*pb.Invoice, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+    payment_hash := &pb.PaymentHash{RHashStr: r_hash}
+    r, err := l.client.LookupInvoice(ctx, payment_hash)
+    if err != nil {
+        log.Fatalf("could not get invoice: %v", err)
+    }
+    return r, nil
+}

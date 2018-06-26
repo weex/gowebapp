@@ -26,6 +26,7 @@ func Start(cfg Config, m *model.Model, l *lnd.LndLn, listener net.Listener) {
 	http.Handle("/", indexHandler(m))
 	http.Handle("/people", peopleHandler(m))
 	http.Handle("/invoice", invoiceHandler(l))
+	http.Handle("/check_invoice", checkInvoiceHandler(l))
 	http.Handle("/js/", http.FileServer(cfg.Assets))
 
 	go server.Serve(listener)
@@ -84,7 +85,7 @@ func invoiceHandler(lnd *lnd.LndLn) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         if r.Method != "GET" {
             w.WriteHeader(http.StatusBadRequest)
-            fmt.Fprintln(w, "No GET", r.Method)
+            fmt.Fprintln(w, "Not GET.", r.Method)
             return
         }
 
@@ -106,6 +107,36 @@ func invoiceHandler(lnd *lnd.LndLn) http.Handler {
         invoice, err := lnd.MakeInvoice(int_amt, desc)
 		if err != nil {
 			http.Error(w, "Error generating invoice.", http.StatusBadRequest)
+			return
+		}
+
+		js, err := json.Marshal(invoice)
+		if err != nil {
+			http.Error(w, "Error coverting invoice to json.", http.StatusBadRequest)
+			return
+		}
+
+		fmt.Fprintf(w, string(js))
+	})
+}
+
+func checkInvoiceHandler(lnd *lnd.LndLn) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        if r.Method != "GET" {
+            w.WriteHeader(http.StatusBadRequest)
+            fmt.Fprintln(w, "Not GET.", r.Method)
+            return
+        }
+
+        r_hash := r.FormValue("r_hash")
+        if r_hash == "" {
+			http.Error(w, "Empty payment hash.", http.StatusBadRequest)
+			return
+        }
+
+        invoice, err := lnd.ViewInvoice(r_hash)
+		if err != nil {
+			http.Error(w, "Error checking invoice.", http.StatusBadRequest)
 			return
 		}
 
