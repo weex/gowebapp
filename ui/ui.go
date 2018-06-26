@@ -91,8 +91,7 @@ func invoiceHandler(lnd *lnd.LndLn) http.Handler {
 
         amt, err := strconv.Atoi(r.FormValue("amt"))
 		if err != nil {
-			http.Error(w, "Error converting amount to int.", http.StatusBadRequest)
-			return
+			amt = 100
 		}
         int_amt := int64(amt)
         if int_amt == 0 {

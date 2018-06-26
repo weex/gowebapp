@@ -1,6 +1,6 @@
 # Lightning Payment Processor
 
-Accept Bitcoin lightning payments and forward when you choose.
+Accept and forward Bitcoin lightning payments.
 
 ## REST API
 
