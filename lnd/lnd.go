@@ -89,36 +89,55 @@ func (l *LndLn) ListPeers() (*pb.ListPeersResponse, error) {
     return r, nil
 }
 
-func (l *LndLn) MakeInvoice(amt int64, desc string) (*pb.AddInvoiceResponse, error) {
+type MakeInvoiceResponse struct {
+    Payment_hash string     `json:"payment_hashi,omitempty"`
+    Payment_request string  `json:"payment_request,omitempty"`
+}
+
+func (l *LndLn) MakeInvoice(amt int64, desc string) (MakeInvoiceResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
     invoice := &pb.Invoice{
         Memo:            desc,
-        //Receipt:         "",
-        //RPreimage:       "",
         Value:           amt,
-        //DescriptionHash: "",
-        //FallbackAddr:    "",
         Expiry:          600,
         Private:         true,
     }
 
-    r, err := l.client.AddInvoice(ctx, invoice)
+    i, err := l.client.AddInvoice(ctx, invoice)
     if err != nil {
         log.Fatalf("could not get invoice: %v", err)
     }
-    return r, nil
+
+    d, err := l.client.DecodePayReq(ctx, &pb.PayReqString{PayReq: i.PaymentRequest})
+    if err != nil {
+        log.Fatalf("could not decode own invoice: %v", err)
+    }
+
+    return MakeInvoiceResponse{Payment_hash: d.PaymentHash, Payment_request: i.PaymentRequest}, nil
 }
 
-func (l *LndLn) ViewInvoice(r_hash string) (*pb.Invoice, error) {
+type ViewInvoiceResponse struct {
+    CreationDate int64      `json:"creation_date,omitempty"`
+    PaymentRequest string   `json:"pay_req,omitempty"`
+    Expiry int64            `json:"expiry,omitempty"`
+    Settled bool            `json:"settled"`
+    ServerDate int64        `json:"server_date,omitempty"`
+}
+
+func (l *LndLn) ViewInvoice(payment_hash string) (ViewInvoiceResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-    payment_hash := &pb.PaymentHash{RHashStr: r_hash}
-    r, err := l.client.LookupInvoice(ctx, payment_hash)
+    p := &pb.PaymentHash{RHashStr: payment_hash}
+    r, err := l.client.LookupInvoice(ctx, p)
     if err != nil {
         log.Fatalf("could not get invoice: %v", err)
     }
-    return r, nil
+    return ViewInvoiceResponse{CreationDate:    r.CreationDate,
+                               PaymentRequest:  r.PaymentRequest,
+                               Expiry:          r.Expiry,
+                               Settled:         r.GetSettled(),
+                               ServerDate:      time.Now().Unix()}, nil
 }

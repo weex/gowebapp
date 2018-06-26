@@ -14,15 +14,15 @@ Accept and forward Bitcoin lightning payments.
         `description` - what should go in memo field
     Returns
         `payment_request` - string to present to user for payment
-        `r_hash` - id that can be used to look up payment status
+        `payment_hash` - id used to look up payment status
         `expire_time` - seconds since the epoch in which time will exire
         `current_time` - seconds since the epoch for the processing server
 
 ### `check_invoice` - get status  of invoice previously created by `invoice`
     Parameters
-        `r_hash`- id used to lookup invoice status
+        `payment_hash`- id used to lookup invoice status
     Returns
-        `invoice` - object with invoice details `settled` being on of `true` or `false`
+        `invoice` - invoice details including the boolean `settled`
 
 ### `balance` - get your account balance
     Parameters: none

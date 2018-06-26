@@ -109,7 +109,7 @@ func invoiceHandler(lnd *lnd.LndLn) http.Handler {
 			return
 		}
 
-		js, err := json.Marshal(invoice)
+		js, err := json.MarshalIndent(invoice, "", "  ")
 		if err != nil {
 			http.Error(w, "Error coverting invoice to json.", http.StatusBadRequest)
 			return
@@ -127,19 +127,19 @@ func checkInvoiceHandler(lnd *lnd.LndLn) http.Handler {
             return
         }
 
-        r_hash := r.FormValue("r_hash")
-        if r_hash == "" {
+        payment_hash := r.FormValue("payment_hash")
+        if payment_hash == "" {
 			http.Error(w, "Empty payment hash.", http.StatusBadRequest)
 			return
         }
 
-        invoice, err := lnd.ViewInvoice(r_hash)
+        invoice, err := lnd.ViewInvoice(payment_hash)
 		if err != nil {
 			http.Error(w, "Error checking invoice.", http.StatusBadRequest)
 			return
 		}
 
-		js, err := json.Marshal(invoice)
+		js, err := json.MarshalIndent(invoice, "", "  ")
 		if err != nil {
 			http.Error(w, "Error coverting invoice to json.", http.StatusBadRequest)
 			return
