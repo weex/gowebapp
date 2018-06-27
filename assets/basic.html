@@ -8,6 +8,8 @@
 <script src="/js/qrcode.min.js"></script>
 <script type="text/javascript">
 var payment_hash = "";
+var period = 5;
+var expiration = current_time = 0;
 var HttpClient = function() {
     this.get = function(aUrl, aCallback) {
         var anHttpRequest = new XMLHttpRequest();
@@ -24,16 +26,26 @@ var HttpClient = function() {
 function myTimer() {
     client.get('http://localhost:3000/check_invoice?payment_hash='+payment_hash, function(response) {
         var obj = JSON.parse(response)
-        if (obj.settled === true) {
+        expiration = obj.expiry + obj.creation_date;
+        if (current_time == 0)
+            current_time = obj.creation_date + 10; // 10 secs for margin of safety
+        current_time += period;
+        if (current_time > expiration)
+            expiredFunction();
+
+        if (obj.settled === true)
             myStopFunction();
-        }
     });
 }
 
 function myStopFunction() {
     clearInterval(myVar);
-    // alert('payment complete!');
     document.getElementById("qrcode").innerHTML = "Payment complete!";
+}
+
+function expiredFunction() {
+    clearInterval(myVar);
+    document.getElementById("qrcode").innerHTML = "Invoice expired.";
 }
 
 </script>
@@ -44,11 +56,10 @@ function myStopFunction() {
 var client = new HttpClient();
 client.get('http://localhost:3000/invoice', function(response) {
     var obj = JSON.parse(response)
-    // alert(obj.payment_request);
     payment_hash = obj.payment_hash;
     new QRCode(document.getElementById("qrcode"), obj.payment_request);
 });
-var myVar = setInterval(myTimer, 5000);
+var myVar = setInterval(myTimer, period * 1000);
 </script>
 
   </body>
