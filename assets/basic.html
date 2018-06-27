@@ -7,6 +7,7 @@
   <body>
 <script src="/js/qrcode.min.js"></script>
 <script type="text/javascript">
+var payment_hash = "";
 var HttpClient = function() {
     this.get = function(aUrl, aCallback) {
         var anHttpRequest = new XMLHttpRequest();
@@ -19,18 +20,38 @@ var HttpClient = function() {
         anHttpRequest.send( null );
     }
 }
+
+function myTimer() {
+    client.get('http://localhost:3000/check_invoice?payment_hash='+payment_hash, function(response) {
+        var obj = JSON.parse(response)
+        if (obj.settled === true) {
+            myStopFunction();
+        }
+    });
+}
+
+function myStopFunction() {
+    clearInterval(myVar);
+    // alert('payment complete!');
+    document.getElementById("qrcode").innerHTML = "Payment complete!";
+}
+
 </script>
 <h1>Hi</h2>
   <div id="qrcode"></div>
-    <script type="text/javascript">
+
+<script type="text/javascript">
 var client = new HttpClient();
 client.get('http://localhost:3000/invoice', function(response) {
     var obj = JSON.parse(response)
-    alert(obj.payment_request);
+    // alert(obj.payment_request);
+    payment_hash = obj.payment_hash;
     new QRCode(document.getElementById("qrcode"), obj.payment_request);
 });
-    </script>
-</body>
+var myVar = setInterval(myTimer, 5000);
+</script>
+
+  </body>
 </html>
 
 
