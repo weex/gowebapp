@@ -35,6 +35,7 @@ function myTimer() {
 function timerStop(message) {
     clearInterval(theTimer);
     document.getElementById("invoice-qr").innerHTML = message;
+    document.getElementById("invoice-text").innerHTML = '';
 }
 
 function getInvoice() {
@@ -44,5 +45,5 @@ function getInvoice() {
         new QRCode(document.getElementById("invoice-qr"), "lightning:" + obj.payment_request);
         document.getElementById("invoice-text").innerHTML = obj.payment_request;
     });
-    myVar = setInterval(theTimer, period * 1000);
+    theTimer = setInterval(myTimer, period * 1000);
 }
