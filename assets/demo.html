@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Demo - Simple Lightning Payment Processor</title>
+
+  <script src="/js/slpp.js"></script>
+  <script src="/js/qrcode.min.js"></script>
+</head>
+<body>
+
+    <h1>Welcome to the SLPP Demo.</h1>
+    <h4>You should see a QR code below if the app was able to talk to your LND instance.</h4>
+  <div id="invoice-qr"></div>
+  <div id="invoice-text" style="color:grey; font-size: 15px"></div>
+
+    <script>
+        getInvoice();
+    </script>
+</body>
+</html>
+
+
+

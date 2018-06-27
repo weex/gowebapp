@@ -101,7 +101,7 @@ func (l *LndLn) MakeInvoice(amt int64, desc string) (MakeInvoiceResponse, error)
     invoice := &pb.Invoice{
         Memo:            desc,
         Value:           amt,
-        Expiry:          600,
+        Expiry:          120,
         Private:         true,
     }
 
