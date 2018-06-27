@@ -90,7 +90,7 @@ func (l *LndLn) ListPeers() (*pb.ListPeersResponse, error) {
 }
 
 type MakeInvoiceResponse struct {
-    Payment_hash string     `json:"payment_hashi,omitempty"`
+    Payment_hash string     `json:"payment_hash,omitempty"`
     Payment_request string  `json:"payment_request,omitempty"`
 }
 

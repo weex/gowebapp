@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Getting an invoice</title>
+  </head>
+  <body>
+<script src="/js/qrcode.min.js"></script>
+<script type="text/javascript">
+var HttpClient = function() {
+    this.get = function(aUrl, aCallback) {
+        var anHttpRequest = new XMLHttpRequest();
+        anHttpRequest.onreadystatechange = function() {
+            if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200)
+                aCallback(anHttpRequest.response);
+        }
+
+        anHttpRequest.open( "GET", aUrl, true );
+        anHttpRequest.send( null );
+    }
+}
+</script>
+<h1>Hi</h2>
+  <div id="qrcode"></div>
+    <script type="text/javascript">
+var client = new HttpClient();
+client.get('http://localhost:3000/invoice', function(response) {
+    var obj = JSON.parse(response)
+    alert(obj.payment_request);
+    new QRCode(document.getElementById("qrcode"), obj.payment_request);
+});
+    </script>
+</body>
+</html>
+
+
+
