@@ -6,10 +6,10 @@ import (
 	"net"
 	"net/http"
 	"strconv"
-    "time"
+        "time"
 
-	"../model"
-	"../lnd"
+	"github.com/weex/gowebapp/model"
+	"github.com/weex/gowebapp/lnd"
 )
 
 type Config struct {

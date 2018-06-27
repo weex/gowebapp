@@ -24,7 +24,7 @@ var HttpClient = function() {
 }
 
 function myTimer() {
-    client.get('http://localhost:3000/check_invoice?payment_hash='+payment_hash, function(response) {
+    client.get('/check_invoice?payment_hash='+payment_hash, function(response) {
         var obj = JSON.parse(response)
         expiration = obj.expiry + obj.creation_date;
         if (current_time == 0)
@@ -54,7 +54,7 @@ function expiredFunction() {
 
 <script type="text/javascript">
 var client = new HttpClient();
-client.get('http://localhost:3000/invoice', function(response) {
+client.get('/invoice', function(response) {
     var obj = JSON.parse(response)
     payment_hash = obj.payment_hash;
     new QRCode(document.getElementById("qrcode"), obj.payment_request);

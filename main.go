@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"./daemon"
+	"github.com/weex/gowebapp/daemon"
 )
 
 var assetsPath string
@@ -13,7 +13,7 @@ var assetsPath string
 func processFlags() *daemon.Config {
 	cfg := &daemon.Config{}
 
-	flag.StringVar(&cfg.ListenSpec, "listen", ":3000", "HTTP listen spec")
+	flag.StringVar(&cfg.ListenSpec, "listen", ":3001", "HTTP listen spec")
 
 	flag.StringVar(&cfg.Db.ConnectString, "db-connect", "postgres://postgres:postgres@db/gowebapp?sslmode=disable", "DB Connect String")
 
