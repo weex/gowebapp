@@ -24,22 +24,7 @@ Accept and forward Bitcoin lightning payments.
     Returns
         `invoice` - invoice details including the boolean `settled`
 
-### `balance` - get your account balance
-    Parameters: none
-    Returns
-        `amount` - amount in satoshis currently being held
-
-### `send` - forward previously collected funds
-    Parameters
-        `destination` - Lightning payment request
-        `amount` - satoshis to send, or `all` to send maximium available
-    Returns
-        `result` - `success` or `error`
-        `fee` - amount paid to route payment
-        `payment_preimage` - preimage for lightning payment
-        `error_details` - reason for error
-
-## Post MVP
+## Future work
     Add to `invoice`, `balance`, and `send`:
         `api_key` - get this from /api_key
 
@@ -59,3 +44,17 @@ Accept and forward Bitcoin lightning payments.
         `api_key` - id or username for the account
         `api_secret` - secret used to authenticate later calls
 
+### Add `balance` - get your account balance
+    Parameters: none
+    Returns
+        `amount` - amount in satoshis currently being held
+
+### Add `send` - forward previously collected funds
+    Parameters
+        `destination` - Lightning payment request
+        `amount` - satoshis to send, or `all` to send maximium available
+    Returns
+        `result` - `success` or `error`
+        `fee` - amount paid to route payment
+        `payment_preimage` - preimage for lightning payment
+        `error_details` - reason for error
