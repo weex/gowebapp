@@ -1,11 +1,12 @@
 # gowebapp
 
-Simplistic Go Web App
+Simple Lightning Payment Processor
 
-Read about it [here](https://grisha.org/blog/2017/04/27/simplistic-go-web-app/).
+Based on the Simplistic Go Web App [here](https://grisha.org/blog/2017/04/27/simplistic-go-web-app/).
 
+## Installation
 
-## With Docker:
+### With Docker:
 
 First time or to rebuild everything and delete container data: `docker-first-run.sh`
 
@@ -15,7 +16,7 @@ Subsequent times, assuming you want to persist data: `docker-run.sh`
 
 Connect to database from another terminal with: `psql -hlocalhost -Upostgres`
 
-## Non-dockerized instructions
+### Non-dockerized instructions
 
 To install:
 
@@ -29,7 +30,7 @@ To install:
 
 ```
 $ export GOPATH=~/go # optional, adjust as necessary
-$ go get github.com/grisha/gowebapp
+$ go get github.com/weex/slpp
 ```
 
 1. That's it. You should now be able to run:
