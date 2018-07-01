@@ -3,7 +3,7 @@ package db
 import (
 	"database/sql"
 
-	"github.com/weex/gowebapp/model"
+	"github.com/weex/slpp/model"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )

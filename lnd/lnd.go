@@ -11,8 +11,8 @@ import (
     "google.golang.org/grpc"
     "google.golang.org/grpc/credentials"
     macaroon "gopkg.in/macaroon.v2"
-    "github.com/weex/gowebapp/macaroons"
-    pb "github.com/weex/gowebapp/gateways/lnd"
+    "github.com/weex/slpp/macaroons"
+    pb "github.com/weex/slpp/gateways/lnd"
 )
 
 

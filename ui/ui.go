@@ -8,8 +8,8 @@ import (
 	"strconv"
         "time"
 
-	"github.com/weex/gowebapp/model"
-	"github.com/weex/gowebapp/lnd"
+	"github.com/weex/slpp/model"
+	"github.com/weex/slpp/lnd"
 )
 
 type Config struct {

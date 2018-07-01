@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/weex/gowebapp/daemon"
+	"github.com/weex/slpp/daemon"
 )
 
 var assetsPath string

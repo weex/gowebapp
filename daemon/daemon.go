@@ -7,10 +7,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/weex/gowebapp/db"
-        "github.com/weex/gowebapp/lnd"
-	"github.com/weex/gowebapp/model"
-	"github.com/weex/gowebapp/ui"
+	"github.com/weex/slpp/db"
+        "github.com/weex/slpp/lnd"
+	"github.com/weex/slpp/model"
+	"github.com/weex/slpp/ui"
 )
 
 type Config struct {
