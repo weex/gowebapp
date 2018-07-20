@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+
 	// "os"
 	// "os/user"
 	"time"
@@ -67,6 +68,12 @@ func InitLnd(cfg Config) (*LndLn, error) {
 	}
 	// defer conn.Close()
 	l := &LndLn{client: pb.NewLightningClient(conn)}
+
+	err = l.SubscribeInvoices()
+	if err != nil {
+		log.Fatalf("did not subscribe to invoices")
+	}
+
 	return l, nil
 }
 
@@ -148,9 +155,8 @@ type InvoiceSubscription struct {
 	settle_index uint64
 }
 
-func (l *LndLn) SubscribeInvoices(in *InvoiceSubscription) error {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
+func (l *LndLn) SubscribeInvoices() error {
+	ctx := context.TODO()
 
 	// TODO: store the below indices in db
 	var sub pb.InvoiceSubscription
@@ -169,12 +175,13 @@ func (l *LndLn) getInvoiceUpdates(lc pb.Lightning_SubscribeInvoicesClient) {
 	for {
 		invoice, err := lc.Recv()
 		if err != nil {
-			fmt.Println("oh shit Recv threw an error")
+			fmt.Printf("oh shit Recv threw an error: %v\n", err)
+		} else {
+			l.processInvoiceUpdate(invoice)
 		}
-		l.processInvoiceUpdate(invoice)
 	}
 }
 
 func (l *LndLn) processInvoiceUpdate(in *pb.Invoice) {
-	fmt.Println("invoice update received")
+	fmt.Printf("invoice update received: %v", in)
 }
