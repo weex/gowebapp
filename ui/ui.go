@@ -6,10 +6,10 @@ import (
 	"net"
 	"net/http"
 	"strconv"
-        "time"
+	"time"
 
-	"github.com/weex/slpp/model"
 	"github.com/weex/slpp/lnd"
+	"github.com/weex/slpp/model"
 )
 
 type Config struct {
@@ -50,27 +50,27 @@ func indexHandler(m *model.Model) http.Handler {
 
 func invoiceHandler(lnd *lnd.LndLn) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        if r.Method != "GET" {
-            w.WriteHeader(http.StatusBadRequest)
-            fmt.Fprintln(w, "Not GET.", r.Method)
-            return
-        }
+		if r.Method != "GET" {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintln(w, "Not GET.", r.Method)
+			return
+		}
 
-        amt, err := strconv.Atoi(r.FormValue("amt"))
+		amt, err := strconv.Atoi(r.FormValue("amt"))
 		if err != nil {
 			amt = 100
 		}
-        int_amt := int64(amt)
-        if int_amt == 0 {
-            int_amt = 100
-        }
+		int_amt := int64(amt)
+		if int_amt == 0 {
+			int_amt = 100
+		}
 
-        desc := r.FormValue("desc")
-        if desc == "" {
-            desc = "gowebapp payment"
-        }
+		desc := r.FormValue("desc")
+		if desc == "" {
+			desc = "gowebapp payment"
+		}
 
-        invoice, err := lnd.MakeInvoice(int_amt, desc)
+		invoice, err := lnd.MakeInvoice(int_amt, desc)
 		if err != nil {
 			http.Error(w, "Error generating invoice.", http.StatusBadRequest)
 			return
@@ -88,19 +88,19 @@ func invoiceHandler(lnd *lnd.LndLn) http.Handler {
 
 func checkInvoiceHandler(lnd *lnd.LndLn) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        if r.Method != "GET" {
-            w.WriteHeader(http.StatusBadRequest)
-            fmt.Fprintln(w, "Not GET.", r.Method)
-            return
-        }
+		if r.Method != "GET" {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintln(w, "Not GET.", r.Method)
+			return
+		}
 
-        payment_hash := r.FormValue("payment_hash")
-        if payment_hash == "" {
+		payment_hash := r.FormValue("payment_hash")
+		if payment_hash == "" {
 			http.Error(w, "Empty payment hash.", http.StatusBadRequest)
 			return
-        }
+		}
 
-        invoice, err := lnd.ViewInvoice(payment_hash)
+		invoice, err := lnd.ViewInvoice(payment_hash)
 		if err != nil {
 			http.Error(w, "Error checking invoice.", http.StatusBadRequest)
 			return
