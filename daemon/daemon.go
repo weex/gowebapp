@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	"github.com/weex/slpp/db"
-        "github.com/weex/slpp/lnd"
+	"github.com/weex/slpp/lnd"
 	"github.com/weex/slpp/model"
 	"github.com/weex/slpp/ui"
 )
@@ -16,36 +16,38 @@ import (
 type Config struct {
 	ListenSpec string
 
-	Db db.Config
-	UI ui.Config
-    Lnd lnd.Config
+	Db  db.Config
+	UI  ui.Config
+	Lnd lnd.Config
 }
 
 func Run(cfg *Config) error {
 	log.Printf("Starting, HTTP on: %s\n", cfg.ListenSpec)
 
-    // Database
-    db, err := db.InitDb(cfg.Db)
+	// Database
+	db, err := db.InitDb(cfg.Db)
 	if err != nil {
 		log.Printf("Error initializing database: %v\n", err)
 		return err
 	}
 
 	m := model.New(db)
+	log.Printf("Connected to database.")
 
-    // Lightning network
-    lnd, err := lnd.InitLnd(cfg.Lnd)
+	// Lightning network
+	lnd, err := lnd.InitLnd(cfg.Lnd)
 	if err != nil {
 		log.Printf("Error initializing Lightning: %v\n", err)
 		return err
 	}
-    log.Printf("got lnd %v", lnd)
+	log.Printf("Connected to LND.")
 
 	listener, err := net.Listen("tcp", cfg.ListenSpec)
 	if err != nil {
 		log.Printf("Error creating listener: %v\n", err)
 		return err
 	}
+	log.Printf("Started HTTP server.")
 
 	ui.Start(cfg.UI, m, lnd, listener)
 

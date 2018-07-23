@@ -23,7 +23,7 @@ func Start(cfg Config, m *model.Model, l *lnd.LndLn, listener net.Listener) {
 		WriteTimeout:   60 * time.Second,
 		MaxHeaderBytes: 1 << 16}
 
-	http.Handle("/", indexHandler(m))
+	http.Handle("/", http.RedirectHandler("/demo.html", 301))
 	http.Handle("/invoice", invoiceHandler(l))
 	http.Handle("/check_invoice", checkInvoiceHandler(l))
 	http.Handle("/js/", http.FileServer(cfg.Assets))
@@ -39,14 +39,6 @@ const (
 	cdnBabelStandalone = "https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.24.0/babel.min.js"
 	cdnAxios           = "https://cdnjs.cloudflare.com/ajax/libs/axios/0.16.1/axios.min.js"
 )
-
-const indexHTML = `Please go to /demo.html`
-
-func indexHandler(m *model.Model) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, indexHTML)
-	})
-}
 
 func invoiceHandler(lnd *lnd.LndLn) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -84,6 +76,18 @@ func invoiceHandler(lnd *lnd.LndLn) http.Handler {
 
 		fmt.Fprintf(w, string(js))
 	})
+}
+
+type PaymentPing struct {
+	CreationDate   int64  `json:"creation_date,omitempty"`
+	PaymentRequest string `json:"pay_req,omitempty"`
+	Expiry         int64  `json:"expiry,omitempty"`
+	Settled        bool   `json:"settled"`
+	ServerDate     int64  `json:"server_date,omitempty"`
+}
+
+func postCallback() {
+	fmt.Println("Would postCallback")
 }
 
 func checkInvoiceHandler(lnd *lnd.LndLn) http.Handler {

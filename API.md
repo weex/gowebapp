@@ -5,7 +5,7 @@ Accept and forward Bitcoin lightning payments.
 ## REST API
 
 * All requests via HTTP GET except where noted.
-* Prepend https://<domain>/api/v1/ to generate full API endpoint URLs.
+* Prepend https://<domain>/api/1/ to generate full API endpoint URLs.
 * Data returned as JSON.
 
 ### `invoice` - get a new invoice that will be processed as below
