@@ -27,6 +27,7 @@ func Start(cfg Config, m *model.Model, l *lnd.LndLn, listener net.Listener) {
 	http.Handle("/invoice", invoiceHandler(l))
 	http.Handle("/check_invoice", checkInvoiceHandler(l))
 	http.Handle("/js/", http.FileServer(cfg.Assets))
+	http.Handle("/css/", http.FileServer(cfg.Assets))
 	http.Handle("/basic.html", http.FileServer(cfg.Assets))
 	http.Handle("/demo.html", http.FileServer(cfg.Assets))
 
@@ -59,7 +60,7 @@ func invoiceHandler(lnd *lnd.LndLn) http.Handler {
 
 		desc := r.FormValue("desc")
 		if desc == "" {
-			desc = "gowebapp payment"
+			desc = "SLPP Demo Payment"
 		}
 
 		invoice, err := lnd.MakeInvoice(int_amt, desc)

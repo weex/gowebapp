@@ -25,17 +25,16 @@ function myTimer() {
             current_time = obj.creation_date + 10; // 10 secs for margin of safety
         current_time += period;
         if (current_time > expiration)
-            timerStop("Invoice expired, please try again.");
+            timerStop("<h5 class='red-text'>Invoice expired, please try again.</h5>");
 
         if (obj.settled === true)
-            timerStop("Payment complete.");
+            timerStop("<h5 class='green-text'>Payment complete.</h5>");
     });
 }
 
 function timerStop(message) {
     clearInterval(theTimer);
-    document.getElementById("invoice-qr").innerHTML = message;
-    document.getElementById("invoice-text").innerHTML = '';
+    document.getElementById("invoice-text").innerHTML = document.getElementById("invoice-text").innerHTML + message;
 }
 
 function getInvoice() {

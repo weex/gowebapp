@@ -2,23 +2,48 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Demo - Simple Lightning Payment Processor</title>
+  <title>Simple Lightning Payment Processor</title>
 
   <script src="/js/slpp.js"></script>
   <script src="/js/qrcode.min.js"></script>
+  <link rel="stylesheet" href="/css/materialize.min.css" />
 </head>
 <body>
 
-    <h1>Welcome to the SLPP Demo.</h1>
-    <h4>You should see a QR code below if the app was able to talk to your LND instance.</h4>
-  <div id="invoice-qr"></div>
-  <div id="invoice-text" style="color:grey; font-size: 15px"></div>
+  <nav class="blue lighten-1" role="navigation">
+    <div class="nav-wrapper container"><a id="logo-container" href="#"
+class="brand-logo">Simple Lightning Payment Processor</a>
+    </div>
+  </nav>
+  <div class="section no-pad-bot" id="index-banner">
+    <div class="container">
+      <br><br>
+      <h2 class="header center orange-text">Welcome to the SLPP Demo</h2>
+      <div class="row center">
+        <h5 class="header col s12 light">You should see a QR code below if the
+        app was able to talk to your LND instance.</h5>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="section">
+      <div class="row">
+         <div class="col s12 m6">
+             <center><div id="invoice-qr"></div></center>
+         </div>
+
+         <div class="col s12 m5">
+            <div id="invoice-text" style="word-break: break-all;"></div>
+         </div>
+      </div>
+    </div>
+  </div>
 
     <script>
         getInvoice();
     </script>
+    <script type="text/javascript" src="/js/materialize.min.js"></script>
 </body>
 </html>
-
-
-
